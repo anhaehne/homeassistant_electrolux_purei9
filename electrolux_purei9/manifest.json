@@ -1,0 +1,9 @@
+{
+    "domain": "electrolux_purei9",
+    "name": "Electrolux Pure i9",
+    "documentation": "https://www.home-assistant.io/components/electrolux",
+    "dependencies": [],
+    "codeowners": [],
+    "requirements": [],
+    "config_flow": true
+  }
