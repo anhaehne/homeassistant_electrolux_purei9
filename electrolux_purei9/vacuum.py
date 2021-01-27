@@ -270,7 +270,7 @@ class RobotClient:
         return self.recv()
 
     def connect(self):
-        _LOGGER.warn("Connecting to " + self.addr + ":" + str(self.port))
+        _LOGGER.debug("Connecting to " + self.addr + ":" + str(self.port))
         self.conn = socket.create_connection((self.addr, self.port))
         self.sock = self.ctx.wrap_socket(self.conn)
         _LOGGER.debug("Connnected")
@@ -349,7 +349,7 @@ class RobotClient:
 
     def getstatus(self):
         minor, data, user1, user2 = self.sendrecv(RobotClient.MSG_GETSTATUS)
-        return RobotClient.STATES[user1]
+        return user1
 
     def startclean(self):
         minor, data, user1, user2 = self.sendrecv(
@@ -402,6 +402,10 @@ class PureI9(StateVacuumEntity):
         self._robot.startclean()
 
     def return_to_base(self):
+        """Set the vacuum cleaner to return to the dock."""
+        self._robot.gohome()
+
+    def stop(self):
         """Set the vacuum cleaner to return to the dock."""
         self._robot.gohome()
 
