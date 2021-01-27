@@ -311,6 +311,9 @@ class RobotClient:
         _LOGGER.debug("Connection Still alive, seems we are authenticated")
         return True
 
+    def disconnect(self):
+        self.conn.close()
+
     def info(self):
         return {
             "id": self.robot_id,
@@ -378,9 +381,9 @@ class PureI9(StateVacuumEntity):
     def __init__(self, cloudRobot: CloudRobot, ip_address: str):
         self.is_on = False
         self._name = cloudRobot.name
-        self._state = STATE_DOCKED
-        self._robot = RobotClient(ip_address, cloudRobot.local_pw)
-        self._robot.connect()
+        self._state = None
+        self._ip_address = ip_address
+        self._local_pw = cloudRobot.local_pw
 
     @property
     def name(self):
@@ -399,26 +402,39 @@ class PureI9(StateVacuumEntity):
 
     def start(self):
         """Start or resume the cleaning task."""
-        self._robot.startclean()
+        robot = self.getRobot()
+        robot.startclean()
+        robot.disconnect()
 
     def return_to_base(self):
         """Set the vacuum cleaner to return to the dock."""
-        self._robot.gohome()
+        robot = self.getRobot()
+        robot.gohome()
+        robot.disconnect()
 
     def stop(self):
         """Set the vacuum cleaner to return to the dock."""
-        self._robot.gohome()
+        robot = self.getRobot()
+        robot.gohome()
+        robot.disconnect()
 
     def update(self):
         """Fetch new state data for this vacuum."""
-        self._state = self.getHomeassistantState(self._robot.getstatus())
+        robot = self.getRobot()
+        self._state = self.getHomeassistantState(robot.getstatus())
+        robot.disconnect()
+
+    def getRobot(self):
+        updateRobot = RobotClient(self._ip_address, self._local_pw)
+        updateRobot.connect()
+        return updateRobot
 
     def getHomeassistantState(self, state: str):
         switcher = {
             RobotClient.STATE_CLEANING: STATE_CLEANING,
             RobotClient.STATE_PAUSED: STATE_PAUSED,
-            RobotClient.STATE_PAUSEDRETURN: STATE_RETURNING,
-            RobotClient.STATE_PAUSEDRETURNPITSTOP: STATE_RETURNING,
+            RobotClient.STATE_PAUSEDRETURN: STATE_PAUSED,
+            RobotClient.STATE_PAUSEDRETURNPITSTOP: STATE_PAUSED,
             RobotClient.STATE_RETURN: STATE_RETURNING,
             RobotClient.STATE_RETURNPITSTOP: STATE_RETURNING,
             RobotClient.STATE_SPOTCLEAN: STATE_CLEANING,
