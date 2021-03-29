@@ -3,7 +3,7 @@
 Most of the code is taken from: https://github.com/Phype/purei9-cli
 
 The vacuum needs a static ip address. 
-Add this to oyu ha config:
+Add this to your ha config:
 
 ``` yaml
 vacuum:
