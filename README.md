@@ -1,3 +1,8 @@
+# Local only!
+This plugin only support robots with local password. The local password has been disabled on newer units. 
+See https://github.com/Ekman/home-assistant-pure-i9 for cloud only support.
+
+
 # homeassistant_electrolux_purei9
 
 Most of the code is taken from: https://github.com/Phype/purei9-cli
